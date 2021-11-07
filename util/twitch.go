@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"time"
@@ -101,7 +102,7 @@ func SendSubRequest(channelName string, callbackUrl string) error {
 	req, err := http.NewRequest(http.MethodPost, postEndpoint, payLoadBuf)
 
 	req.Header.Add("Client-ID", os.Getenv("CLIENT_ID"))
-	req.Header.Add("Authorization", os.Getenv("BEARERTOKEN"))
+	req.Header.Add("Authorization", "Bearer "+os.Getenv("BEARERTOKEN"))
 	req.Header.Add("Content-Type", "application/json")
 
 	client := &http.Client{}
@@ -123,11 +124,15 @@ func SendSubRequest(channelName string, callbackUrl string) error {
 }
 
 func GetUserID(channelName string) string {
+	var channelID string
+
 	url := "https://api.twitch.tv/helix/users?login=" + channelName
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 
+	fmt.Println(channelName, url)
+
 	req.Header.Add("Client-ID", os.Getenv("CLIENT_ID"))
-	req.Header.Add("Authorization", os.Getenv("BEARERTOKEN"))
+	req.Header.Add("Authorization", "Bearer "+os.Getenv("BEARERTOKEN"))
 
 	client := &http.Client{}
 	res, err := client.Do(req)
@@ -135,16 +140,72 @@ func GetUserID(channelName string) string {
 		fmt.Println("error: ", err)
 	}
 
-	defer res.Body.Close()
+	if res.StatusCode == 200 {
 
-	userInfo := &UserInfo{}
-	decoder := json.NewDecoder(res.Body)
-	err = decoder.Decode(&userInfo)
-	if err != nil {
-		fmt.Println(err)
+		defer res.Body.Close()
+
+		userInfo := &UserInfo{}
+		decoder := json.NewDecoder(res.Body)
+		err = decoder.Decode(&userInfo)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		channelID = userInfo.Data[0].ID
 	}
 
-	fmt.Println(userInfo)
-	// hopefully there's only one user
-	return userInfo.Data[0].ID
+	return channelID
+}
+
+type ActiveSubs struct {
+	Total int `json:"total"`
+	Data  []struct {
+		ID        string `json:"id"`
+		Status    string `json:"status"`
+		Type      string `json:"type"`
+		Version   string `json:"version"`
+		Condition struct {
+			BroadcasterUserID string `json:"broadcaster_user_id"`
+		} `json:"condition"`
+		CreatedAt time.Time `json:"created_at"`
+		Transport struct {
+			Method   string `json:"method"`
+			Callback string `json:"callback"`
+		} `json:"transport"`
+		Cost int `json:"cost"`
+	} `json:"data"`
+	MaxTotalCost int `json:"max_total_cost"`
+	TotalCost    int `json:"total_cost"`
+	Pagination   struct {
+	} `json:"pagination"`
+}
+
+func GetActiveSubs(l *log.Logger) *ActiveSubs {
+
+	subs := &ActiveSubs{}
+
+	url := "https://api.twitch.tv/helix/eventsub/subscriptions"
+	req, err := http.NewRequest(http.MethodGet, url, nil)
+
+	req.Header.Add("Client-ID", os.Getenv("CLIENT_ID"))
+	req.Header.Add("Authorization", "Bearer "+os.Getenv("BEARERTOKEN"))
+
+	client := &http.Client{}
+	res, err := client.Do(req)
+	if err != nil {
+		fmt.Println("error: ", err)
+	}
+
+	if res.StatusCode == 200 {
+		defer res.Body.Close()
+
+		decoder := json.NewDecoder(res.Body)
+		err = decoder.Decode(&subs)
+		if err != nil {
+			l.Println("Error decoding subs: ", err)
+		}
+
+	}
+
+	return subs
 }

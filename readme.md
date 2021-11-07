@@ -3,3 +3,6 @@
 Simple PoC slackbot that allows subscription to twitch events (i.e. channel goes live)
 
 Primarily used to test k8s deploys and scaling
+
+Export all env vars:  
+`export $(grep -v '^#' .env | xargs)`
