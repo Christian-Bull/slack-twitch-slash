@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -12,8 +13,20 @@ func main() {
 
 	l := log.New(os.Stdout, "slack-api", log.LstdFlags)
 
-	sh := handlers.NewSlack(l)
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "443"
+	}
 
-	http.Handle("/", sh)
-	log.Fatal(http.ListenAndServe(":5050", nil))
+	bindAddr := fmt.Sprintf(":%s", port)
+
+	// Create and register handlers
+	sh := handlers.NewSlack(l)
+	th := handlers.NewTwitch(l)
+
+	http.Handle("/slack", sh)
+	http.Handle("/twitch", th)
+
+	l.Printf("Starting server on port %s", port)
+	l.Fatal(http.ListenAndServeTLS(bindAddr, "creds/localhost.crt", "creds/localhost.key", nil))
 }
