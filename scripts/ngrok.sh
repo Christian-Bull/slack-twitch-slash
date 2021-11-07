@@ -1,3 +1,4 @@
 #! /bin/bash
 
-/Applications/ngrok http 5050
+# really should add that to path
+/Applications/ngrok http 443
