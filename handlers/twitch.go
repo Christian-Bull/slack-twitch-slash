@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"example.com/main/util"
 )
@@ -57,8 +58,19 @@ func (s *Twitch) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 			}
 
 			if n.Subscription.Type == "stream.online" {
+
 				// post notification to slack
 				fmt.Println(n.Event.BroadcasterUserName)
+				msg := util.CreateMessage(
+					n.Event.BroadcasterUserName+" is now live!",
+					os.Getenv("CHANNEL"),
+				)
+
+				err := util.PostMessage(s.l, msg)
+				if err != nil {
+					s.l.Println("Error posting slack message: ", err)
+				}
+
 			} else {
 				fmt.Println("Event type: ", n.Subscription.Type, n.Event.BroadcasterUserName)
 			}

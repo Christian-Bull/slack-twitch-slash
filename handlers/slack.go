@@ -38,18 +38,36 @@ func (s *Slack) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 			s.l.Println("No text form key found")
 		}
 
-		// gets channel name
-		cName := util.GetUserID(a)
+		command := r.FormValue("command")
 
-		if cName != "" {
+		if command != "" {
 
-			// call twitch method
-			s.l.Println("Sending event subscription request")
-			s.l.Println(callBackUrl)
-			util.SendSubRequest(cName, callBackUrl)
+			// gets channel id
+			cName := util.GetUserID(a)
 
-			fmt.Fprintf(rw, "Subscribed to %s for twitch notifications", a)
+			if command == "/twitch-add" {
+
+				if cName != "" {
+
+					// call twitch method
+					s.l.Println("Sending event subscription request")
+					s.l.Println(callBackUrl)
+					util.SendSubRequest(cName, callBackUrl)
+
+					fmt.Fprintf(rw, "Subscribed to %s for twitch notifications", a)
+				} else {
+					fmt.Fprintf(rw, "User %s not found", a)
+				}
+			}
+
+			if command == "/twitch-delete" {
+
+				if cName != "" {
+					// list active subs
+
+					// loop through and delete any that match channel name
+				}
+			}
 		}
-
 	}
 }
