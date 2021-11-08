@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	"example.com/main/util"
 )
@@ -34,27 +35,37 @@ func (s *Slack) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 		}
 
 		a := r.FormValue("text")
-		if a == "" {
-			s.l.Println("No text form key found")
-		}
 
 		command := r.FormValue("command")
 
 		if command != "" {
 
 			// gets channel id
-			cName := util.GetUserID(a)
+			cID := util.GetUserInfo(a, "id")
 
 			if command == "/twitch-add" {
 
-				if cName != "" {
+				if cID != "" {
 
 					// call twitch method
 					s.l.Println("Sending event subscription request")
-					s.l.Println(callBackUrl)
-					util.SendSubRequest(cName, callBackUrl)
 
-					fmt.Fprintf(rw, "Subscribed to %s for twitch notifications", a)
+					err := util.SendSubRequest(cID, callBackUrl)
+
+					if err != nil {
+						fmt.Fprintf(rw, "Error adding event notification")
+					} else {
+
+						rw.Header().Set("Content-Type", "application/json")
+
+						resp := &util.SlashResponse{
+							ResponseType: "in_channel",
+							Text:         "Added event notifications for " + a,
+						}
+
+						resp.RespToJSON(rw)
+					}
+
 				} else {
 					fmt.Fprintf(rw, "User %s not found", a)
 				}
@@ -62,11 +73,60 @@ func (s *Slack) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 
 			if command == "/twitch-delete" {
 
-				if cName != "" {
+				if cID != "" {
+
 					// list active subs
+					ActiveSubs := util.GetActiveSubs(s.l)
+
+					var msg string
 
 					// loop through and delete any that match channel name
+					for i := 0; i < len(ActiveSubs.Data); i++ {
+						if ActiveSubs.Data[i].Condition.BroadcasterUserID == cID {
+
+							// delete this subscription
+							err := util.DeleteSub(s.l, ActiveSubs.Data[i].ID)
+							if err != nil {
+								fmt.Fprintf(rw, "Error deleting sub: %s ", err)
+							} else {
+								msg = "Deleted event notifications for " + a
+							}
+						}
+					}
+
+					// poorly checking if a msg is null
+					if msg == "" {
+						msg = "No active subscriptions found for user " + a
+					}
+
+					rw.Header().Set("Content-Type", "application/json")
+
+					resp := &util.SlashResponse{
+						ResponseType: "in_channel",
+						Text:         msg,
+					}
+
+					resp.RespToJSON(rw)
 				}
+			}
+
+			if command == "/twitch-list" {
+
+				// lists active subs by name
+				subs := util.GetActiveSubs(s.l)
+
+				mData := subs.GetActiveSubNames(s.l)
+				mDataS := strings.Join(mData, " ")
+
+				rw.Header().Set("Content-Type", "application/json")
+
+				resp := &util.SlashResponse{
+					ResponseType: "in_channel",
+					Text:         "Active event notifications: " + mDataS,
+				}
+
+				resp.RespToJSON(rw)
+
 			}
 		}
 	}

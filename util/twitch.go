@@ -3,6 +3,7 @@ package util
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -95,8 +96,6 @@ func SendSubRequest(channelName string, callbackUrl string) error {
 		},
 	}
 
-	fmt.Println(body)
-
 	payLoadBuf := new(bytes.Buffer)
 	json.NewEncoder(payLoadBuf).Encode(body)
 	req, err := http.NewRequest(http.MethodPost, postEndpoint, payLoadBuf)
@@ -123,13 +122,19 @@ func SendSubRequest(channelName string, callbackUrl string) error {
 	return err
 }
 
-func GetUserID(channelName string) string {
-	var channelID string
+// provide either a channel name or id, it will return the opposite
+func GetUserInfo(input string, outType string) string {
+	var url string
+	var out string
 
-	url := "https://api.twitch.tv/helix/users?login=" + channelName
+	if outType == "id" {
+		// provide channel name
+		url = "https://api.twitch.tv/helix/users?login=" + input
+	} else if outType == "name" {
+		url = "https://api.twitch.tv/helix/users?id=" + input
+	}
+
 	req, err := http.NewRequest(http.MethodGet, url, nil)
-
-	fmt.Println(channelName, url)
 
 	req.Header.Add("Client-ID", os.Getenv("CLIENT_ID"))
 	req.Header.Add("Authorization", "Bearer "+os.Getenv("BEARERTOKEN"))
@@ -151,10 +156,14 @@ func GetUserID(channelName string) string {
 			fmt.Println(err)
 		}
 
-		channelID = userInfo.Data[0].ID
+		if outType == "id" {
+			out = userInfo.Data[0].ID
+		} else if outType == "name" {
+			out = userInfo.Data[0].DisplayName
+		}
 	}
 
-	return channelID
+	return out
 }
 
 type ActiveSubs struct {
@@ -208,4 +217,55 @@ func GetActiveSubs(l *log.Logger) *ActiveSubs {
 	}
 
 	return subs
+}
+
+func DeleteSub(l *log.Logger, SubID string) error {
+	var err error
+
+	// send a sub delete request
+	url := "https://api.twitch.tv/helix/eventsub/subscriptions?id=" + SubID
+	req, err := http.NewRequest(http.MethodDelete, url, nil)
+
+	req.Header.Add("Client-ID", os.Getenv("CLIENT_ID"))
+	req.Header.Add("Authorization", "Bearer "+os.Getenv("BEARERTOKEN"))
+
+	client := &http.Client{}
+	res, err := client.Do(req)
+	if err != nil {
+		fmt.Println("error: ", err)
+	}
+
+	if res.StatusCode != 204 {
+		err = errors.New("Error deleting subscription")
+	} else if res.StatusCode == 404 {
+		err = errors.New("Subscription for channel not found")
+	}
+
+	return err
+}
+
+func (a *ActiveSubs) subNamesToList() []string {
+	var aList []string
+
+	for i := 0; i < len(a.Data); i++ {
+		aList = append(aList, a.Data[i].Condition.BroadcasterUserID)
+	}
+	return aList
+}
+
+func channelIDsToName(listOfIDs []string) []string {
+	var out []string
+
+	for i := 0; i < len(listOfIDs); i++ {
+		a := GetUserInfo(listOfIDs[i], "name")
+		out = append(out, a)
+	}
+
+	return out
+}
+
+func (a *ActiveSubs) GetActiveSubNames(l *log.Logger) []string {
+	s := a.subNamesToList()
+
+	return channelIDsToName(s)
 }
