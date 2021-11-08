@@ -1,6 +1,8 @@
 package util
 
 import (
+	"encoding/json"
+	"io"
 	"log"
 	"os"
 
@@ -50,4 +52,14 @@ func PostMessage(l *log.Logger, m Message) error {
 
 	}
 	return err
+}
+
+type SlashResponse struct {
+	ResponseType string `json:"response_type"`
+	Text         string `json:"text"`
+}
+
+func (s *SlashResponse) RespToJSON(w io.Writer) error {
+	e := json.NewEncoder(w)
+	return e.Encode(s)
 }
