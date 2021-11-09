@@ -1,0 +1,3 @@
+*.env
+scripts/*ngrok.sh
+creds
