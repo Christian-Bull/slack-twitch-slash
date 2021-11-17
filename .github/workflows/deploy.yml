@@ -47,7 +47,7 @@ jobs:
             docker stop slack-slash
             echo "starting new container"
             # docker run --name "slack-slash" csbull55/slack-twitch-slash:${{ env.SHA }}
-            docker run --name "slack-slash" csbull55/slack-twitch-slash:latest
+            docker run --name "slack-slash" ---env-file ~/.env csbull55/slack-twitch-slash:latest
             
 
       - name: Remove Github Actions IP from security group
