@@ -20,6 +20,7 @@ jobs:
         run: |
           echo "AWS_DEFAULT_REGION=us-east-1" >> $GITHUB_ENV
           echo "AWS_SG_ID=${{ secrets.SG_ID }}" >> $GITHUB_ENV
+          echo "SHA=${GITHUB_SHA}" >> $GITHUB_ENV
     
       - name: Add Github Actions IP to Security group
         run: |
@@ -38,8 +39,14 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ubuntu
           key: ${{ secrets.SSH_PEM_KEY }}
-          script: cd /home/ubuntu && touch text.txt
-#         envs: '' 
+          script: |
+            echo "Pulling image"
+            docker pull csbull55/slack-twitch-slash:${{ env.SHA }}
+            
+            echo "stopping old container"
+            docker stop --name "slack-slash"
+            echo "starting new container
+            docker run --name "slack-slash" csbull55/slack-twitch-slash:${{ env.SHA }}
 
       - name: Remove Github Actions IP from security group
         run: |
