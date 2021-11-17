@@ -46,7 +46,9 @@ jobs:
             echo "stopping old container"
             docker stop --name "slack-slash"
             echo "starting new container
-            docker run --name "slack-slash" csbull55/slack-twitch-slash:${{ env.SHA }}
+            # docker run --name "slack-slash" csbull55/slack-twitch-slash:${{ env.SHA }}
+            docker run --name "slack-slash" csbull55/slack-twitch-slash:latest
+            
 
       - name: Remove Github Actions IP from security group
         run: |
