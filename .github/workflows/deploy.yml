@@ -13,6 +13,7 @@ jobs:
     
     steps:
       - name: Get github actions ip
+        id: ip
         uses: haythem/public-ip@v1.2
     
       - name: set env vars
