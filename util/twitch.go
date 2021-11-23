@@ -214,6 +214,8 @@ func GetActiveSubs(l *log.Logger) *ActiveSubs {
 			l.Println("Error decoding subs: ", err)
 		}
 
+	} else {
+		l.Println(res.StatusCode)
 	}
 
 	return subs

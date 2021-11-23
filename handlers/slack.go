@@ -43,6 +43,8 @@ func (s *Slack) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 			// gets channel id
 			cID := util.GetUserInfo(a, "id")
 
+			s.l.Println("id-name debug: ", cID)
+
 			if command == "/twitch-add" {
 
 				if cID != "" {
