@@ -41,7 +41,7 @@ jobs:
           key: ${{ secrets.SSH_PEM_KEY }}
           script: |
             echo "Pulling image"
-            docker pull csbull55/slack-twitch-slash:latest
+            docker pull csbull55/slack-twitch-slash:${{ env.SHA }}
             
             echo "stopping old container"
             docker stop slack-slash
