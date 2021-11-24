@@ -28,14 +28,14 @@ func CreateMessage(message string, channel string) Message {
 	}
 }
 
-func PostMessage(l *log.Logger, m Message) error {
+func PostMessage(l *log.Logger, m Message) string {
 	var (
-		retries int = 3
-		err     error
+		retries   int = 3
+		errorFlag string
 	)
 
-	api := slack.New("Bearer " + os.Getenv("SLACKAPIKEY"))
-	l.Println(os.Getenv("SLACKAPIKEY"))
+	api := slack.New(os.Getenv("SLACKAPIKEY"))
+
 	// retry slack post until it hits the retry limit or is successful
 	for i := 0; i < retries; i++ {
 		msgID, _, _, err := api.SendMessage(
@@ -44,13 +44,19 @@ func PostMessage(l *log.Logger, m Message) error {
 		)
 		if err != nil {
 			l.Println("Error posting message: retry:", i, err)
+			errorFlag = "fail"
 		} else {
 			l.Println("Sent message to: ", m.channel, msgID)
+			errorFlag = ""
 			break
 		}
 
 	}
-	return err
+
+	// using this errorFlag string becuase the above loop wasn't correctly
+	// returning the error
+	// not sure why and don't feel like troubleshooting it
+	return errorFlag
 }
 
 type SlashResponse struct {

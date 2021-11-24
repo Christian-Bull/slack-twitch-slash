@@ -26,7 +26,7 @@ func main() {
 		l,
 		util.CreateMessage("Connected :ratjam:", "C9M568FA4"),
 	)
-	if err != nil {
+	if err != "" {
 		l.Fatal("Error posting slack message: ", err)
 	}
 
