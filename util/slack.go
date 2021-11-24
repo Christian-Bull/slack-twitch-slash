@@ -35,9 +35,9 @@ func PostMessage(l *log.Logger, m Message) error {
 	)
 
 	api := slack.New("Bearer " + os.Getenv("SLACKAPIKEY"))
-
+	l.Println(os.Getenv("SLACKAPIKEY"))
 	// retry slack post until it hits the retry limit or is successful
-	for retries > 0 {
+	for i := 0; i < retries; i++ {
 		msgID, _, _, err := api.SendMessage(
 			m.channel,
 			slack.MsgOptionText(m.message, false),
