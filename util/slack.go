@@ -43,8 +43,7 @@ func PostMessage(l *log.Logger, m Message) error {
 			slack.MsgOptionText(m.message, false),
 		)
 		if err != nil {
-			l.Println("Error posting message: retry:", retries, err)
-			retries--
+			l.Println("Error posting message: retry:", i, err)
 		} else {
 			l.Println("Sent message to: ", m.channel, msgID)
 			break
