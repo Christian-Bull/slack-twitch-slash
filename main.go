@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"example.com/main/handlers"
+	"example.com/main/util"
 )
 
 func main() {
@@ -19,6 +20,15 @@ func main() {
 	}
 
 	bindAddr := fmt.Sprintf(":%s", port)
+
+	// post test connection message
+	err := util.PostMessage(
+		l,
+		util.CreateMessage("Connected :ratjam:", "C9M568FA4"),
+	)
+	if err != nil {
+		l.Fatal("Error posting slack message: ", err)
+	}
 
 	// Create and register handlers
 	sh := handlers.NewSlack(l)
