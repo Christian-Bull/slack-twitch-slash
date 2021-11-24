@@ -67,7 +67,7 @@ func (s *Twitch) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 				)
 
 				err := util.PostMessage(s.l, msg)
-				if err != nil {
+				if err != "" {
 					s.l.Println("Error posting slack message: ", err)
 				}
 
