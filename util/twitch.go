@@ -215,6 +215,15 @@ func GetActiveSubs(l *log.Logger) *ActiveSubs {
 		}
 
 	} else {
+		defer res.Body.Close()
+
+		respBody, err := io.ReadAll(res.Body)
+		if err != nil {
+			fmt.Println("Error reading response", err)
+		}
+
+		fmt.Println(string(respBody))
+
 		l.Println(res.StatusCode)
 	}
 
