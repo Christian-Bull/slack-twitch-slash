@@ -59,10 +59,19 @@ func (s *Twitch) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 
 			if n.Subscription.Type == "stream.online" {
 
+				// get stream infos
+				sInfo := util.GetStreamInfo(s.l, n.Event.UserID)
+
+				msgText := fmt.Sprintf("%s is now live! Game: %s\n`%s`\n%s",
+					n.Event.BroadcasterUserName,
+					sInfo.Data[0].GameName,
+					sInfo.Data[0].Title,
+					"https://www.twitch.tv/"+sInfo.Data[0].UserName)
+
 				// post notification to slack
 				fmt.Println(n.Event.BroadcasterUserName)
 				msg := util.CreateMessage(
-					n.Event.BroadcasterUserName+" is now live!",
+					msgText,
 					os.Getenv("CHANNEL"),
 				)
 
