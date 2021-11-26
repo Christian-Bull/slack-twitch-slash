@@ -194,7 +194,7 @@ func GetActiveSubs(l *log.Logger) *ActiveSubs {
 	subs := &ActiveSubs{}
 
 	url := "https://api.twitch.tv/helix/eventsub/subscriptions"
-	req, _ := http.NewRequest(http.MethodGet, url, nil)
+	req, err := http.NewRequest(http.MethodGet, url, nil)
 
 	req.Header.Add("Client-ID", os.Getenv("CLIENT_ID"))
 	req.Header.Add("Authorization", "Bearer "+os.Getenv("BEARERTOKEN"))
@@ -279,53 +279,4 @@ func (a *ActiveSubs) GetActiveSubNames(l *log.Logger) []string {
 	s := a.subNamesToList()
 
 	return channelIDsToName(s)
-}
-
-type streamInfo struct {
-	Data []struct {
-		ID           string    `json:"id"`
-		UserID       string    `json:"user_id"`
-		UserLogin    string    `json:"user_login"`
-		UserName     string    `json:"user_name"`
-		GameID       string    `json:"game_id"`
-		GameName     string    `json:"game_name"`
-		Type         string    `json:"type"`
-		Title        string    `json:"title"`
-		ViewerCount  int       `json:"viewer_count"`
-		StartedAt    time.Time `json:"started_at"`
-		Language     string    `json:"language"`
-		ThumbnailURL string    `json:"thumbnail_url"`
-		TagIds       []string  `json:"tag_ids"`
-		IsMature     bool      `json:"is_mature"`
-	} `json:"data"`
-}
-
-func GetStreamInfo(l *log.Logger, userID string) *streamInfo {
-
-	sInfo := &streamInfo{}
-
-	url := "https://api.twitch.tv/helix/streams?user_id=" + userID
-	req, _ := http.NewRequest(http.MethodGet, url, nil)
-
-	req.Header.Add("Client-ID", os.Getenv("CLIENT_ID"))
-	req.Header.Add("Authorization", "Bearer "+os.Getenv("BEARERTOKEN"))
-
-	client := &http.Client{}
-	res, err := client.Do(req)
-	if err != nil {
-		l.Println("Stream info request error: ", err)
-	}
-
-	if res.StatusCode == 200 {
-		defer res.Body.Close()
-
-		decoder := json.NewDecoder(res.Body)
-		err = decoder.Decode(&sInfo)
-		if err != nil {
-			l.Println("Error decoding stream info ", err)
-		}
-
-		l.Println(res.StatusCode)
-	}
-	return sInfo
 }
