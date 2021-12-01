@@ -281,7 +281,7 @@ func (a *ActiveSubs) GetActiveSubNames(l *log.Logger) []string {
 	return channelIDsToName(s)
 }
 
-type streamInfo struct {
+type StreamInfo struct {
 	Data []struct {
 		ID           string    `json:"id"`
 		UserID       string    `json:"user_id"`
@@ -298,11 +298,13 @@ type streamInfo struct {
 		TagIds       []string  `json:"tag_ids"`
 		IsMature     bool      `json:"is_mature"`
 	} `json:"data"`
+	Pagination struct {
+	} `json:"pagination"`
 }
 
-func GetStreamInfo(l *log.Logger, userID string) *streamInfo {
+func GetStreamInfo(l *log.Logger, userID string) *StreamInfo {
 
-	sInfo := &streamInfo{}
+	sInfo := &StreamInfo{}
 
 	url := "https://api.twitch.tv/helix/streams?user_id=" + userID
 	req, _ := http.NewRequest(http.MethodGet, url, nil)
