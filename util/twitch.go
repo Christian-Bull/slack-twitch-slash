@@ -194,7 +194,7 @@ func GetActiveSubs(l *log.Logger) *ActiveSubs {
 	subs := &ActiveSubs{}
 
 	url := "https://api.twitch.tv/helix/eventsub/subscriptions"
-	req, _ := http.NewRequest(http.MethodGet, url, nil)
+	req, err := http.NewRequest(http.MethodGet, url, nil)
 
 	req.Header.Add("Client-ID", os.Getenv("CLIENT_ID"))
 	req.Header.Add("Authorization", "Bearer "+os.Getenv("BEARERTOKEN"))
