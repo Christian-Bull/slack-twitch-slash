@@ -12,7 +12,7 @@ import (
 func TestSlackConnection(t *testing.T) {
 	l := log.New(os.Stdout, "slack-api-test", log.LstdFlags)
 
-	tstMsg := util.CreateMessage("_no stream info to display_ :disappointed:", "C9M568FA4")
+	tstMsg := util.CreateMessage("Test message :ratjam:", "C9M568FA4")
 
 	sendMsg := util.PostMessage(l, tstMsg)
 	if sendMsg != "" {
@@ -24,7 +24,7 @@ func TestTwitchResponse(t *testing.T) {
 	l := log.New(os.Stdout, "slack-api-test", log.LstdFlags)
 
 	// gets stream info for example user twitch
-	s := util.GetStreamInfo(l, "43246220")
+	s := util.GetStreamInfo(l, "40980097")
 
 	var msgText string
 
@@ -36,8 +36,8 @@ func TestTwitchResponse(t *testing.T) {
 			"https://www.twitch.tv/"+s.Data[0].UserName)
 	} else {
 		msgText = fmt.Sprintf("%s is now live! \n %s",
-			"test",
-			"no stream info to display :disappointed:")
+			"Faux",
+			"https://www.twitch.tv/Faux")
 	}
 
 	t.Logf(msgText)
