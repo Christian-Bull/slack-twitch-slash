@@ -74,7 +74,7 @@ func (s *Twitch) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 				} else {
 					msgText = fmt.Sprintf("%s is now live! \n %s",
 						n.Event.BroadcasterUserName,
-						"_no stream info to display_ :disappointed:")
+						"https://www.twitch.tv/"+n.Event.BroadcasterUserName)
 				}
 
 				// post notification to slack
