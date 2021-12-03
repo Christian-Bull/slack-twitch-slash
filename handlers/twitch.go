@@ -48,6 +48,9 @@ func (s *Twitch) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 		nh := r.Header.Get("Twitch-Eventsub-Message-Type")
 		if nh != "" && nh == "notification" {
 
+			// return response first
+			rw.WriteHeader(http.StatusOK)
+
 			// double check it's the correct one
 			n := &util.EventNotification{}
 
