@@ -24,7 +24,7 @@ func TestTwitchResponse(t *testing.T) {
 	l := log.New(os.Stdout, "slack-api-test", log.LstdFlags)
 
 	// gets stream info for example user twitch
-	s := util.GetStreamInfo(l, "40980097")
+	s := util.GetStreamInfo(l, "136355877")
 
 	var msgText string
 

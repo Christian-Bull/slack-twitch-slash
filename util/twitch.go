@@ -304,52 +304,31 @@ type StreamInfo struct {
 
 func GetStreamInfo(l *log.Logger, userID string) *StreamInfo {
 
-	var (
-		retries int = 3
-		delay   int = 8
-	)
-
 	sInfo := &StreamInfo{}
 
-	for i := 0; i < retries; i++ {
+	url := "https://api.twitch.tv/helix/streams?user_id=" + userID
+	req, _ := http.NewRequest(http.MethodGet, url, nil)
 
-		sInfo := &StreamInfo{}
+	req.Header.Add("Client-ID", os.Getenv("CLIENT_ID"))
+	req.Header.Add("Authorization", "Bearer "+os.Getenv("BEARERTOKEN"))
 
-		url := "https://api.twitch.tv/helix/streams?user_id=" + userID
-		req, _ := http.NewRequest(http.MethodGet, url, nil)
+	client := &http.Client{}
+	res, err := client.Do(req)
+	if err != nil {
+		l.Println("Stream info request error: ", err)
+	}
 
-		req.Header.Add("Client-ID", os.Getenv("CLIENT_ID"))
-		req.Header.Add("Authorization", "Bearer "+os.Getenv("BEARERTOKEN"))
+	if res.StatusCode == 200 {
+		defer res.Body.Close()
 
-		client := &http.Client{}
-		res, err := client.Do(req)
+		decoder := json.NewDecoder(res.Body)
+		err = decoder.Decode(&sInfo)
 		if err != nil {
-			l.Println("Stream info request error: ", err)
+			l.Println("Error decoding stream info ", err)
 		}
 
-		if res.StatusCode == 200 {
-			defer res.Body.Close()
-
-			decoder := json.NewDecoder(res.Body)
-			err = decoder.Decode(&sInfo)
-			if err != nil {
-				l.Println("Error decoding stream info ", err)
-			}
-
-			// if there is data to return
-			if len(sInfo.Data) > 0 {
-				l.Println("Stream data found for: ", sInfo.Data[0].UserName)
-				break
-			}
-
-		} else {
-			l.Println("Twitch stream info error: ", res.StatusCode)
-		}
-
-		l.Println("Retry debug: ", i)
-
-		// wait some time before trying again
-		time.Sleep(time.Duration(delay) * time.Second)
+	} else {
+		l.Println("Twitch stream info error: ", res.StatusCode)
 	}
 
 	return sInfo
