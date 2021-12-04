@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: content-cloud-backend
+  labels:
+    app: content-cloud-backend
+    service: content-cloud-backend
+spec:
+  replicas: {{ .Values.image.replicas }}
+  selector:
+    matchLabels:
+      service: content-cloud-backend
+  template:
+    metadata:
+      labels:
+        service: content-cloud-backend
+        role: content-cloud-backend
+    spec:
+      serviceAccountName: content-cloud-backend
+      containers:
+        - name: content-cloud-backend
+          # workingDir: /app
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+
+      volumes:
+        - name: content-cloud-backend-config
+          configMap:
+            name: content-cloud-backend-config

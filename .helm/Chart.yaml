@@ -1,0 +1,8 @@
+apiVersion: v2
+name: slack-twitch-slash
+type: application
+version: 1.0.0
+description: Slack app for twitch channel notifications
+maintainers:
+  - name: Christian Bull
+icon: https://image.shutterstock.com/image-photo/broccoli-isolated-on-white-background-600w-1260410467.jpg
