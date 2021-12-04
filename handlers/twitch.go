@@ -103,7 +103,7 @@ func (s *Twitch) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 					var delay int = 20
 
 					for i := 0; i < retries; i++ {
-						sTmp := util.GetStreamInfo(s.l, n.Event.UserID)
+						sTmp := util.GetStreamInfo(s.l, n.Event.BroadcasterUserID)
 
 						// log a bunch of stuff
 						if len(sTmp.Data) > 0 {
