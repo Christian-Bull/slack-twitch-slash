@@ -59,10 +59,10 @@ func (s *Twitch) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 			}
 
 			s.l.Println(
-				n.Event.BroadcasterUserID,
-				n.Event.BroadcasterUserName,
-				n.Event.UserID,
-				n.Event.UserName,
+				"Broadcaster: "+n.Event.BroadcasterUserID,
+				"Broadcaster: "+n.Event.BroadcasterUserName,
+				"User: "+n.Event.UserID,
+				"User: "+n.Event.UserName,
 			)
 
 			if n.Subscription.Type == "stream.online" {
@@ -70,7 +70,7 @@ func (s *Twitch) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 				var msgText string
 
 				// get stream infos
-				sInfo := util.GetStreamInfo(s.l, n.Event.UserID)
+				sInfo := util.GetStreamInfo(s.l, n.Event.BroadcasterUserID)
 
 				// check if stream info was returned
 				if len(sInfo.Data) > 0 {
@@ -78,7 +78,7 @@ func (s *Twitch) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 						n.Event.BroadcasterUserName,
 						sInfo.Data[0].GameName,
 						sInfo.Data[0].Title,
-						"https://www.twitch.tv/"+sInfo.Data[0].UserName)
+						"https://www.twitch.tv/"+n.Event.BroadcasterUserName)
 				} else {
 					msgText = fmt.Sprintf("%s is now live! \n %s",
 						n.Event.BroadcasterUserName,
