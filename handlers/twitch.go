@@ -103,6 +103,7 @@ func (s *Twitch) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 							s.l.Println(sTmp.Data[0].StartedAt)
 							s.l.Println(sTmp.Data[0].GameName)
 							s.l.Println(sTmp.Data[0].Title)
+							break
 						} else {
 							s.l.Println("No stream info for: ", n.Event.BroadcasterUserName)
 						}
