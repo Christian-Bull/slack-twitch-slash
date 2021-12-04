@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"example.com/main/util"
 )
@@ -48,9 +49,6 @@ func (s *Twitch) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 		nh := r.Header.Get("Twitch-Eventsub-Message-Type")
 		if nh != "" && nh == "notification" {
 
-			// return response first
-			rw.WriteHeader(http.StatusOK)
-
 			// double check it's the correct one
 			n := &util.EventNotification{}
 
@@ -91,6 +89,27 @@ func (s *Twitch) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 				if err != "" {
 					s.l.Println("Error posting slack message: ", err)
 				}
+
+				// temp for logging how long it takes for stream info to show
+				go func() {
+					var retries int = 5
+					var delay int = 20
+
+					for i := 0; i < retries; i++ {
+						sTmp := util.GetStreamInfo(s.l, n.Event.UserID)
+
+						// log a bunch of stuff
+						if len(sTmp.Data) > 0 {
+							s.l.Println(sTmp.Data[0].StartedAt)
+							s.l.Println(sTmp.Data[0].GameName)
+							s.l.Println(sTmp.Data[0].Title)
+						} else {
+							s.l.Println("No stream info for: ", n.Event.BroadcasterUserName)
+						}
+
+						time.Sleep(time.Duration(delay) * time.Second)
+					}
+				}()
 
 			} else {
 				fmt.Println("Event type: ", n.Subscription.Type, n.Event.BroadcasterUserName)
