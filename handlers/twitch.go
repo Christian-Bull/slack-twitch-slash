@@ -58,6 +58,13 @@ func (s *Twitch) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 				fmt.Println("Error decoding body", err)
 			}
 
+			s.l.Println(
+				n.Event.BroadcasterUserID,
+				n.Event.BroadcasterUserName,
+				n.Event.UserID,
+				n.Event.UserName,
+			)
+
 			if n.Subscription.Type == "stream.online" {
 
 				var msgText string
