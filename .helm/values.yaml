@@ -1,9 +1,23 @@
 global:
   ingress_domain: 'slack-slash.dev'
 
+chart:
+  name: "slack-twitch"
 
 image:
   replicas: 1
   pullPolicy: IfNotPresent
   repository: csbull55/slack-twitch-slash
   tag: "latest"  # for testing
+
+app:
+  
+  # twitch
+  bearertoken: ''
+  callbackurl: ''
+  client_id: ''
+  client_secret: ''
+
+  # slack
+  slackapikey: ''
+  channel: ''

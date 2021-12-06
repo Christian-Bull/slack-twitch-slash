@@ -1,29 +1,26 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: content-cloud-backend
+  name: {{ .Values.chart.name }}
   labels:
-    app: content-cloud-backend
-    service: content-cloud-backend
+    app: {{ .Values.chart.name }}
+    service: {{ .Values.chart.name }}-svc
 spec:
   replicas: {{ .Values.image.replicas }}
   selector:
     matchLabels:
-      service: content-cloud-backend
+      service: {{ .Values.chart.name }}-svc
   template:
     metadata:
       labels:
-        service: content-cloud-backend
-        role: content-cloud-backend
+        service: {{ .Values.chart.name }}-svc
+        role: {{ .Values.chart.name }}
     spec:
-      serviceAccountName: content-cloud-backend
+      serviceAccountName: {{ .Values.chart.name }}
       containers:
-        - name: content-cloud-backend
-          # workingDir: /app
+        - name: {{ .Values.chart.name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-
-      volumes:
-        - name: content-cloud-backend-config
-          configMap:
-            name: content-cloud-backend-config
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.chart.name }}-cm
