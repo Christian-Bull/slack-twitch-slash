@@ -47,7 +47,7 @@ jobs:
             docker stop slack-slash
             docker container rm --force slack-slash
             echo "starting new container"
-            docker run -d --name "slack-slash" --env-file ~/.env -v ~/creds:/app/creds -p 443:443 csbull55/slack-twitch-slash:${{GITHUB_REF_NAME}}-${{ env.SHA }}
+            docker run -d --name "slack-slash" --env-file ~/.env -v ~/creds:/app/creds -p 443:443 csbull55/slack-twitch-slash:${{ GITHUB_REF_NAME }}-${{ env.SHA }}
 
             # cleanup old images
             docker image prune -a --force
