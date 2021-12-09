@@ -38,6 +38,7 @@ func main() {
 	http.Handle("/slack", sh)
 	http.Handle("/twitch", th)
 	http.Handle("/rat", hh)
+	http.Handle("/", hh)
 
 	l.Printf("Starting server on port %s", port)
 	l.Fatal(http.ListenAndServe(bindAddr, nil))

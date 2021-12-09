@@ -3,24 +3,24 @@ kind: Deployment
 metadata:
   name: {{ .Values.chart.name }}
   labels:
-    app: {{ .Values.chart.name }}
-    service: {{ .Values.chart.name }}-svc
+    slack-app: {{ .Values.chart.name }}-svc
 spec:
   replicas: {{ .Values.image.replicas }}
   selector:
     matchLabels:
-      service: {{ .Values.chart.name }}-svc
+      slack-app: {{ .Values.chart.name }}-svc
   template:
     metadata:
       labels:
-        service: {{ .Values.chart.name }}-svc
-        role: {{ .Values.chart.name }}
+        slack-app: {{ .Values.chart.name }}-svc
     spec:
-      serviceAccountName: {{ .Values.chart.name }}
       containers:
-        - name: {{ .Values.chart.name }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          envFrom:
-            - configMapRef:
-                name: {{ .Values.chart.name }}-cm
+      - name: {{ .Values.chart.name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        envFrom:
+          - configMapRef:
+              name: {{ .Values.chart.name }}-cm
+      imagePullSecrets:
+      - name: {{ .Values.chart.name }}-key
+

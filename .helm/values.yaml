@@ -1,23 +1,29 @@
 global:
-  ingress_domain: 'slack-slash.dev'
+  ingress_domain: 'igou.cbull.dev'
 
 chart:
-  name: "slack-twitch"
+  name: 'dummy'
 
 image:
   replicas: 1
   pullPolicy: IfNotPresent
   repository: csbull55/slack-twitch-slash
-  tag: "latest"  # for testing
+  tag: "develop-latest"  # for testing
+
+imageCredentials:
+  registry: docker.io
+  username: 'dummy'
+  password: 'dummy'
+  email: 'dummy'
 
 app:
   
   # twitch
-  bearertoken: ''
-  callbackurl: ''
-  client_id: ''
-  client_secret: ''
+  bearertoken: 'dummy'
+  callbackurl: 'dummy'
+  client_id: 'dummy'
+  client_secret: 'dummy'
 
   # slack
-  slackapikey: ''
-  channel: ''
+  slackapikey: 'dummy'
+  channel: 'dummy'

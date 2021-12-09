@@ -2,13 +2,16 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{ .Values.chart.name }}-svc
-spec:
-  type: ClusterIP
-  ports:
-    - port: 5000
-      targetPort: 8080  # temp for testing, change to image port
-      name: http
-      protocol: TCP
+  labels:
+    slack-app: {{ .Values.chart.name }}-svc
 
+spec:
+  ports:
+  - port: 5000
+    targetPort: 5000  # temp for testing, change to image port
+    name: http
+    protocol: TCP
   selector:
-    service: {{ .Values.chart.name }}-svc
+    slack-app: {{ .Values.chart.name }}-svc
+  sessionAffinity: None
+  type: ClusterIP
