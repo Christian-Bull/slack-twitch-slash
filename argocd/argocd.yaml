@@ -16,8 +16,9 @@ spec:
           vaule: "develop-latest"
         - name: image.replicas
           value: "1"
-    chart: .helm
-    repoURL: https://github.com/Christian-Bull/slack-twitch-slash
+    chart: slack-twitch-slash
+    repoURL: https://github.com/Christian-Bull/slack-twitch-slash/
+    targetRevision: 1.0.0
   syncPolicy:
     automated: {}
     syncOptions:
