@@ -2,7 +2,7 @@ global:
   ingress_domain: 'igou.cbull.dev'
 
 chart:
-  name: 'dummy'
+  name: 'slack-twitch-slash'
 
 image:
   replicas: 1
