@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.chart.name }}
+  labels:
+    slack-app: {{ .Values.chart.name }}-svc
+spec:
+  replicas: {{ .Values.image.replicas }}
+  selector:
+    matchLabels:
+      slack-app: {{ .Values.chart.name }}-svc
+  template:
+    metadata:
+      labels:
+        slack-app: {{ .Values.chart.name }}-svc
+    spec:
+      containers:
+      - name: {{ .Values.chart.name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        envFrom:
+          - configMapRef:
+              name: {{ .Values.chart.name }}-cm
+      imagePullSecrets:
+      - name: {{ .Values.chart.name }}-key

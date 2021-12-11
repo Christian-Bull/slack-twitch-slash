@@ -16,7 +16,7 @@ func main() {
 
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "443"
+		port = "5000"
 	}
 
 	bindAddr := fmt.Sprintf(":%s", port)
@@ -38,7 +38,8 @@ func main() {
 	http.Handle("/slack", sh)
 	http.Handle("/twitch", th)
 	http.Handle("/rat", hh)
+	http.Handle("/", hh)
 
 	l.Printf("Starting server on port %s", port)
-	l.Fatal(http.ListenAndServeTLS(bindAddr, "creds/localhost.crt", "creds/localhost.key", nil))
+	l.Fatal(http.ListenAndServe(bindAddr, nil))
 }

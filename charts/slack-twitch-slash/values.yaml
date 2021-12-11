@@ -1,0 +1,11 @@
+global:
+  ingress_domain: 'igou.cbull.dev'
+
+chart:
+  name: 'slack-twitch-slash'
+
+image:
+  replicas: 1
+  pullPolicy: Always
+  repository: csbull55/slack-twitch-slash
+  tag: "develop-latest"  # for testing

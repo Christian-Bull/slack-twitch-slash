@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: slack-twitch-slash
+  namespace: slack-twitch-slash
+spec:
+  destination:
+    namespace: slack-twitch-slash
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    helm:
+      version: v2
+      parameters:
+        - name: image.tag
+          vaule: "develop-latest"
+        - name: image.replicas
+          value: "1"
+    chart: slack-twitch-slash
+    repoURL: https://github.com/Christian-Bull/slack-twitch-slash/
+    targetRevision: 1.0.0
+  syncPolicy:
+    automated: {}
+    syncOptions:
+    - CreateNamespace=true

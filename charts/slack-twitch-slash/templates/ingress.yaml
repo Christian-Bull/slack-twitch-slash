@@ -1,0 +1,25 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ .Values.chart.name }}
+  labels:
+    slack-app: {{ .Values.chart.name }}-svc
+  annotations:
+    acme.cert-manager.io/http01-ingress-class: external
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    traefik.ingress.kubernetes.io/redirect-entry-point: https
+spec:
+  ingressClassName: external
+  rules:
+    - host: {{ .Values.global.ingress_domain | quote }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              serviceName: {{ .Values.chart.name }}-svc
+              servicePort: 5000
+  tls:
+  - hosts:
+    - {{ .Values.global.ingress_domain }}
+    secretName: slack-slash-acme-certificate
