@@ -23,4 +23,3 @@ spec:
               name: {{ .Values.chart.name }}-cm
       imagePullSecrets:
       - name: {{ .Values.chart.name }}-key
-

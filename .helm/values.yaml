@@ -9,21 +9,3 @@ image:
   pullPolicy: Always
   repository: csbull55/slack-twitch-slash
   tag: "develop-latest"  # for testing
-
-imageCredentials:
-  registry: docker.io
-  username: 'dummy'
-  password: 'dummy'
-  email: 'dummy'
-
-app:
-  
-  # twitch
-  bearertoken: 'dummy'
-  callbackurl: 'dummy'
-  client_id: 'dummy'
-  client_secret: 'dummy'
-
-  # slack
-  slackapikey: 'dummy'
-  channel: 'dummy'
