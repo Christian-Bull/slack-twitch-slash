@@ -13,7 +13,7 @@ fi
 
 CHART_NAME="slack-twitch-slash"
 
-helm install slack-slash ./.helm/. --create-namespace -n $CHART_NAME \
+helm install slack-slash ./charts/slack-twitch-slash --create-namespace -n $CHART_NAME \
     --set chart."name=${CHART_NAME}" \
     --set app."bearertoken=${BEARERTOKEN}" \
     --set app."callbackurl=${CALLBACKURL}" \
