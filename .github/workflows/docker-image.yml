@@ -59,3 +59,14 @@ jobs:
             csbull55/slack-twitch-slash:${{ env.GITHUB_REF_NAME }}-latest
             csbull55/slack-twitch-slash:${{ env.GITHUB_REF_NAME }}-${{ env.SHA }}
           push: true
+          
+      - name: Update Image Version in the related HelmChart values.yaml
+        uses: fjogeleit/yaml-update-action@master
+        with:
+          valueFile: 'charts/slack-twitch-slash/values.yaml'
+          propertyPath: 'image.tag'
+          value: ${{ env.GITHUB_REF_NAME }}-${{ env.SHA }}
+          branch: develop
+          targetBranch: main
+          createPR: true
+          message: 'Update Image Version to ${{ env.GITHUB_REF_NAME }}-${{ env.SHA }}' 
