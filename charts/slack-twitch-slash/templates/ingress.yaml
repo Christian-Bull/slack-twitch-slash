@@ -1,4 +1,4 @@
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ .Values.chart.name }}
@@ -17,8 +17,10 @@ spec:
           - path: /
             pathType: Prefix
             backend:
-              serviceName: {{ .Values.chart.name }}-svc
-              servicePort: 5000
+              service:
+                name: {{ .Values.chart.name }}-svc
+                port:
+                  number: 5000
   tls:
   - hosts:
     - {{ .Values.global.ingress_domain }}
