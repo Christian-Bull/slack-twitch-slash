@@ -21,12 +21,5 @@ spec:
         envFrom:
           - configMapRef:
               name: {{ .Values.chart.name }}-cm
-        livenessProbe:
-          httpGet:
-            path: /rat
-            port: 5000
-          initialDelaySeconds: 10
-          periodSeconds: 30
-
       imagePullSecrets:
       - name: {{ .Values.chart.name }}-key
