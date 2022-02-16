@@ -8,4 +8,4 @@ image:
   replicas: 2
   pullPolicy: Always
   repository: csbull55/slack-twitch-slash
-  tag: "main-latest"
+  tag: main-5084dddab45a4843d146b989c077e0948ed107d0
