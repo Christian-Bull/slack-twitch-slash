@@ -26,7 +26,6 @@ jobs:
 
       - name: update deployment spec
         run: |
-          sed 's/SED_imageName/${{ env.GITHUB_REF_NAME }}-${{ env.SHA }}/g' manifests/.templates/deployment.yml > manifests/deployment.yml
           export SED_REPLACE_TAG=${{ env.GITHUB_REF_NAME }}-${{ env.SHA }}`
           sed -i 's|^\(\s*tag\s*:\s*\).*|\1'"$SED_REPLACE_TAG"'|' charts/slack-twitch-slash/values.yaml
 
