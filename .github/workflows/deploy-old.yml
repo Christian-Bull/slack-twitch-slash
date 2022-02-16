@@ -1,0 +1,64 @@
+
+name: deployold
+
+on:
+
+  workflow_dispatch:
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Get github actions ip
+        id: ip
+        uses: haythem/public-ip@v1.2
+    
+      - name: set env vars
+        run: |
+          echo "AWS_DEFAULT_REGION=us-east-1" >> $GITHUB_ENV
+          echo "AWS_SG_ID=${{ secrets.SG_ID }}" >> $GITHUB_ENV
+          echo "SHA=${GITHUB_SHA}" >> $GITHUB_ENV
+          echo "GITHUB_REF_NAME=${GITHUB_REF_NAME}" >> $GITHUB_ENV
+    
+      - name: Add Github Actions IP to Security group
+        run: |
+          aws ec2 authorize-security-group-ingress --group-id ${{ env.AWS_SG_ID }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32    
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ env.AWS_DEFAULT_REGION }}
+          
+      - uses: actions/checkout@v2
+      
+      - name: SSH Remote Commands
+        uses: appleboy/ssh-action@v0.1.4
+          
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ubuntu
+          key: ${{ secrets.SSH_PEM_KEY }}
+          script: |
+            echo "Pulling image"
+            docker pull csbull55/slack-twitch-slash:${{ env.SHA }}
+            
+            echo "stopping old container"
+            docker stop slack-slash
+            docker container rm --force slack-slash
+            echo "starting new container"
+            docker run -d --name "slack-slash" --env-file ~/.env -v ~/creds:/app/creds -p 443:443 csbull55/slack-twitch-slash:${{ env.GITHUB_REF_NAME }}-${{ env.SHA }}
+
+            # cleanup old images
+            docker image prune -a --force
+            
+
+      - name: Remove Github Actions IP from security group
+        run: |
+          aws ec2 revoke-security-group-ingress --group-id ${{ env.AWS_SG_ID }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ env.AWS_DEFAULT_REGION }}
+        if: always()
