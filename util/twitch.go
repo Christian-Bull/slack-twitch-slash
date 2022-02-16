@@ -353,6 +353,8 @@ func (a *ActiveSubs) Resubscribe(l *log.Logger) {
 				a.Data[i].Transport.Callback,
 			)
 
+			l.Printf("%+v\n", a.Data[i])
+
 			// grab the broadcaster id
 			broadcasterID := a.Data[i].Condition.BroadcasterUserID
 
@@ -365,9 +367,13 @@ func (a *ActiveSubs) Resubscribe(l *log.Logger) {
 			// resubscribe
 			channelName := GetUserInfo(broadcasterID, "id")
 
-			err = SendSubRequest(channelName, os.Getenv("CALLBACKURL")+"/twitch")
-			if err != nil {
-				l.Println("Error subbing to: " + channelName + " resubscribe debug")
+			// it's possible a channel has been deleted
+			if channelName != "" {
+
+				err = SendSubRequest(channelName, os.Getenv("CALLBACKURL")+"/twitch")
+				if err != nil {
+					l.Println("Error subbing to: " + channelName + " resubscribe debug")
+				}
 			}
 		}
 	}
