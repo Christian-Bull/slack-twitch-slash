@@ -334,3 +334,41 @@ func GetStreamInfo(l *log.Logger, userID string) *StreamInfo {
 	return sInfo
 
 }
+
+// cleans up subscriptions
+// resubscribes to any subscription that's gone inactive
+// due to notification_failures_exceeded
+func (a *ActiveSubs) Resubscribe(l *log.Logger) {
+
+	// loop through active subs
+	for i := 0; i < len(a.Data); i++ {
+
+		// check the status
+		if a.Data[i].Status == "notification_failures_exceeded" {
+
+			l.Printf("Resubscribe debug: %s %s %s %s",
+				a.Data[i].Status,
+				a.Data[i].ID,
+				a.Data[i].Condition.BroadcasterUserID,
+				a.Data[i].Transport.Callback,
+			)
+
+			// grab the broadcaster id
+			broadcasterID := a.Data[i].Condition.BroadcasterUserID
+
+			// delete the old sub
+			err := DeleteSub(l, a.Data[i].ID)
+			if err != nil {
+				l.Println("Error deleting subscription: " + a.Data[i].ID)
+			}
+
+			// resubscribe
+			channelName := GetUserInfo(broadcasterID, "id")
+
+			err = SendSubRequest(channelName, os.Getenv("CALLBACKURL")+"/twitch")
+			if err != nil {
+				l.Println("Error subbing to: " + channelName + " resubscribe debug")
+			}
+		}
+	}
+}

@@ -117,6 +117,9 @@ func (s *Slack) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 				// lists active subs by name
 				subs := util.GetActiveSubs(s.l)
 
+				// resubscribe if any are inactive
+				subs.Resubscribe(s.l)
+
 				mData := subs.GetActiveSubNames(s.l)
 				mDataS := strings.Join(mData, " ")
 
