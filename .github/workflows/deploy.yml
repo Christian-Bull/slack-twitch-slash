@@ -26,7 +26,7 @@ jobs:
 
       - name: update deployment spec
         run: |
-          export SED_REPLACE_TAG=${{ env.GITHUB_REF_NAME }}-${{ env.SHA }}`
+          export SED_REPLACE_TAG=${{ env.GITHUB_REF_NAME }}-${{ env.SHA }}
           sed -i 's|^\(\s*tag\s*:\s*\).*|\1'"$SED_REPLACE_TAG"'|' charts/slack-twitch-slash/values.yaml
 
       - name: Create Pull Request
