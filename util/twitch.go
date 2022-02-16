@@ -365,7 +365,7 @@ func (a *ActiveSubs) Resubscribe(l *log.Logger) {
 			}
 
 			// resubscribe
-			channelName := GetUserInfo(broadcasterID, "id")
+			channelName := GetUserInfo(broadcasterID, "name")
 
 			// it's possible a channel has been deleted
 			if channelName != "" {
