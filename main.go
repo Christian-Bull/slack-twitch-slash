@@ -8,6 +8,7 @@ import (
 
 	"example.com/main/handlers"
 	"example.com/main/util"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 func main() {
@@ -39,6 +40,9 @@ func main() {
 	http.Handle("/twitch", th)
 	http.Handle("/rat", hh)
 	http.Handle("/", hh)
+
+	// prometheus metrics
+	http.Handle("/metrics", promhttp.Handler())
 
 	l.Printf("Starting server on port %s", port)
 	l.Fatal(http.ListenAndServe(bindAddr, nil))
