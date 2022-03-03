@@ -36,13 +36,13 @@ func main() {
 	th := handlers.NewTwitch(l)
 	hh := handlers.NewHello(l)
 
+	// prometheus metrics
+	http.Handle("/metrics", promhttp.Handler())
+
 	http.Handle("/slack", sh)
 	http.Handle("/twitch", th)
 	http.Handle("/rat", hh)
 	http.Handle("/", hh)
-
-	// prometheus metrics
-	http.Handle("/metrics", promhttp.Handler())
 
 	l.Printf("Starting server on port %s", port)
 	l.Fatal(http.ListenAndServe(bindAddr, nil))
