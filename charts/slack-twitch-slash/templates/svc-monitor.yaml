@@ -7,6 +7,6 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: example-app
+      slack-app: {{ .Values.chart.name }}-svc
   endpoints:
   - port: http
