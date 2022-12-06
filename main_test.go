@@ -23,6 +23,13 @@ func TestSlackConnection(t *testing.T) {
 func TestTwitchResponse(t *testing.T) {
 	l := log.New(os.Stdout, "slack-api-test", log.LstdFlags)
 
+	// get bearer token
+	if os.Getenv("BEARERTOKEN") == "" {
+		twichApiKey := util.RequestToken(l, os.Getenv("CLIENT_ID"), os.Getenv("CLIENT_SECRET"))
+
+		os.Setenv("BEARERTOKEN", twichApiKey)
+	}
+
 	// gets stream info for example user twitch
 	s := util.GetStreamInfo(l, "136355877")
 
