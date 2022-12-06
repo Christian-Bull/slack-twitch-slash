@@ -22,6 +22,13 @@ func main() {
 
 	bindAddr := fmt.Sprintf(":%s", port)
 
+	// get twitch auth
+	if os.Getenv("BEARERTOKEN") == "" {
+		twichApiKey := util.RequestToken(l, os.Getenv("CLIENT_ID"), os.Getenv("CLIENT_SECRET"))
+
+		os.Setenv("BEARERTOKEN", twichApiKey)
+	}
+
 	// post test connection message
 	err := util.PostMessage(
 		l,
