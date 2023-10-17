@@ -5,7 +5,7 @@ metadata:
   labels:
     slack-app: {{ .Values.chart.name }}-svc
   annotations:
-    acme.cert-manager.io/http01-ingress-class: external
+    acme.cert-manager.io/http01-ingress-class: nginx
     cert-manager.io/cluster-issuer: letsencrypt-prod
     traefik.ingress.kubernetes.io/redirect-entry-point: https
 spec:

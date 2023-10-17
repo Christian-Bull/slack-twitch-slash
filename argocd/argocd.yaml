@@ -11,6 +11,6 @@ source:
         value: main-latest
 destination:
   server: 'https://kubernetes.default.svc'
-  namespace: slack-twitch-slash
+  namespace: cbull
 syncPolicy:
   automated: {}
